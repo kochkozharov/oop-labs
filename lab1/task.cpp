@@ -1,7 +1,7 @@
 #include "task.h"
 
 
-std::string& removeVowels(std::string& str) {
+std::string& removeVowelsByRef(std::string& str) {
     const std::string vowels = "aeiouyAEIOUY";
     size_t i = 0;
     while (i < str.length()) {
@@ -13,7 +13,7 @@ std::string& removeVowels(std::string& str) {
     return str;
 }
 
-std::string _removeVowels(std::string& str) {
+std::string removeVowels(std::string& str) {
     const std::string vowels = "aeiouyAEIOUY";
     std::string new_str;
     for (size_t i = 0; i < str.length(); ++i)
