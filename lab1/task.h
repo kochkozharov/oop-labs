@@ -2,4 +2,6 @@
 
 #include <string>
 
-std::string& removeVowels(std::string& str);
+std::string _removeVowels(std::string &str);
+
+std::string &removeVowels(std::string &str);

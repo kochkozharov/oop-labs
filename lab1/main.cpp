@@ -5,6 +5,6 @@
 int main() {
     std::string str;
     getline(std::cin, str);
-    std::cout << removeVowels(str) << std::endl;
+    std::cout << _removeVowels(str) << std::endl;
     return 0;
 }

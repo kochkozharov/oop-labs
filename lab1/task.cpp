@@ -1,5 +1,6 @@
 #include "task.h"
 
+
 std::string& removeVowels(std::string& str) {
     const std::string vowels = "aeiouyAEIOUY";
     size_t i = 0;
@@ -10,4 +11,13 @@ std::string& removeVowels(std::string& str) {
             i++;
     }
     return str;
+}
+
+std::string _removeVowels(std::string& str) {
+    const std::string vowels = "aeiouyAEIOUY";
+    std::string new_str;
+    for (size_t i = 0; i < str.length(); ++i)
+        if (vowels.find(str[i]) == std::string::npos)
+            new_str += str[i];
+    return new_str;
 }
