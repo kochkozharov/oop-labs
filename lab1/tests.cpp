@@ -47,7 +47,6 @@ TEST(test9, remove_vowels) {
     ASSERT_FALSE(removeVowelsByRef(s) == "Ths wbst s fr losrs LL!");
 }
 
-
 int main(int argc, char **argv) {
     testing::InitGoogleTest(&argc, argv);
     return RUN_ALL_TESTS();

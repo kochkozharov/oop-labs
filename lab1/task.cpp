@@ -1,6 +1,5 @@
 #include "task.h"
 
-
 std::string& removeVowelsByRef(std::string& str) {
     const std::string vowels = "aeiouyAEIOUY";
     size_t i = 0;
