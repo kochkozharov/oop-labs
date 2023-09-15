@@ -8,13 +8,13 @@ TEST(test1, remove_vowels) {
 }
 
 TEST(test2, remove_vowels) {
-    std::string s = "iu";
-    ASSERT_TRUE(removeVowels(s) == "");
+    std::string s = "iu io wo";
+    ASSERT_TRUE(removeVowels(s) == "  w");
 }
 
 TEST(test3, remove_vowels) {
-    std::string s = "abc";
-    ASSERT_TRUE(removeVowels(s) == "bc");
+    std::string s = "abc qwert";
+    ASSERT_TRUE(removeVowels(s) == "bc qwrt");
 }
 
 TEST(test4, remove_vowels) {
