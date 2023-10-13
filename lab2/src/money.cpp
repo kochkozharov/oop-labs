@@ -200,7 +200,7 @@ Money& Money::operator-=(const Money& other) {
     std::size_t maxSize = std::max(other.size_, size_);
     for (size_t i = 0; i < maxSize || carry; ++i) {
         if (i < size_ && i < other.size_) {
-            if (data_[i] - carry >= other.data_[i]) {
+            if (data_[i] >= other.data_[i] + carry) {
                 data_[i] -= other.data_[i] + carry;
                 carry = 0;
             } else {
@@ -208,10 +208,16 @@ Money& Money::operator-=(const Money& other) {
                 carry = 1;
             }
         } else if (i < size_) {
-            data_[i] -= carry;
-            if (data_[i] == 0 && carry)
-                size_--;
-            break;
+            if (data_[i] >= carry) {
+                data_[i] -= carry;
+                if (data_[i] == 0 && carry)
+                    size_--;
+                carry = 0;
+                break;
+            }
+            else {
+                data_[i] = 10 + data_[i] - carry;
+            }
         } else {
             throw std::invalid_argument("Difference can't be megative");
         }
@@ -227,7 +233,6 @@ Money operator-(const Money& a, const Money& b) {
 }
 
 std::ostream& operator<<(std::ostream& stream, const Money& money) {
-    stream << money.capacity_ << ' ' << money.size_ << '\n';
     for (std::size_t i = money.size_; i-- > 2;)
         stream << Money::toChar(money.data_[i]);
     if (money.size_ < 3)
@@ -286,7 +291,7 @@ bool operator==(const Money& a, const Money& b) {
 }
 
 bool operator!=(const Money& a, const Money& b) {
-    return !(a==b);
+    return !(a == b);
 }
 
 }  // namespace xyz

@@ -7,6 +7,11 @@
 namespace xyz {
 
 class Money {
+    friend bool operator==(const Money& a, const Money& b);
+    friend bool operator<(const Money& a, const Money& b);
+    friend std::ostream& operator<<(std::ostream& stream, const Money& money);
+    friend std::istream& operator>>(std::istream& stream, Money& money);
+
    public:
     using uchar = unsigned char;
     Money();
@@ -17,7 +22,6 @@ class Money {
     Money(Money&& other) noexcept;
     virtual ~Money() noexcept;
     void swap(Money& other) noexcept;
-    operator std::string() const;
     Money& operator=(const Money& other) &;
     Money& operator=(Money&& other) &;
     std::size_t size() const;
@@ -27,16 +31,12 @@ class Money {
     std::string toString() const;
 
    private:
+    uchar* data_;
+    std::size_t size_, capacity_;
     static uchar toChar(uchar c) noexcept;
     static uchar toValue(uchar c);
     void pushBack(uchar c);
     void increaseCapacity();
-    uchar* data_;
-    std::size_t size_, capacity_;
-    friend bool operator<(const Money& a, const Money& b);
-    friend bool operator==(const Money& a, const Money& b);
-    friend std::ostream& operator<<(std::ostream& stream, const Money& money);
-    friend std::istream& operator>>(std::istream& stream, Money& money);
 };
 
 bool operator!=(const Money& a, const Money& b);
