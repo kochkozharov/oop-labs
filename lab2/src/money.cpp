@@ -118,7 +118,6 @@ Money::Money(const Money& other) : data_(new uchar[other.size_]), size_(other.si
 }
 
 Money::Money(Money&& other) noexcept : data_(other.data_), size_(other.size_), capacity_(other.capacity_) {
-    other.size_ = 0;
     other.data_ = nullptr;
 }
 
