@@ -9,5 +9,7 @@ int main() {
     xyz::Money m1{"100.00"};
     xyz::Money m3("0.01");
     std::cout << m1-m3 << '\n';
+    xyz::Money none;
+    std::cout << m-none << '\n';
     return 0;
 }

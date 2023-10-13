@@ -48,9 +48,7 @@ uchar Money::toChar(uchar c) noexcept {
     return c + '0';
 }
 
-Money::Money() : data_(new uchar[1]), size_(1), capacity_(1) {
-    *data_ = 0;
-}
+Money::Money() : data_(nullptr), size_(0), capacity_(0) {}
 
 Money::Money(const std::size_t& n, uchar c) : capacity_(n) {
     if (n == 0)
@@ -246,7 +244,7 @@ std::ostream& operator<<(std::ostream& stream, const Money& money) {
     return stream;
 }
 
-std::istream& operator>>(std::istream& stream, Money& money) {  // vpadlu
+std::istream& operator>>(std::istream& stream, Money& money) {
     std::string str;
     stream >> str;
     money = Money(str);
