@@ -55,7 +55,7 @@ class MainRoutine {
         for (int i = 0; i < data.size(); i++) {
             std::cout << (i + 1) << ":\n";
             std::cout << "  area : " << static_cast<double>(*data[i]) << "\n"
-                      << "  enter : " << data[i]->center() << "\n";
+                      << "  сenter : " << data[i]->center() << "\n";
         }
     }
 
@@ -65,8 +65,7 @@ class MainRoutine {
     void start() {
         std::string command;
         std::cout << "> ";
-        bool f = static_cast<bool>(std::cin >> command);
-        do {
+        while (std::cin >> command) {
             if (command == "push") {
                 pushFigure();
             } else if (command == "info") {
@@ -75,14 +74,13 @@ class MainRoutine {
                 eraseFigure();
             } else if (command == "area") {
                 wholeArea();
-            } else if (command == "exit" || !f) {
+            } else if (command == "exit") {
                 break;
             } else {
                 std::cout << "Unknown command.\n";
             }
             std::cout << "> ";
-            f = static_cast<bool>(std::cin >> command);
-        } while (1);
+        }
     }
 };
 
