@@ -119,11 +119,14 @@ Money::Money(const Money& other) : data_(new uchar[other.size_]), size_(other.si
 
 Money::Money(Money&& other) noexcept : data_(other.data_), size_(other.size_), capacity_(other.capacity_) {
     other.data_ = nullptr;
+    other.capacity_ = 0;
+    other.size_ = 0;
 }
 
 void Money::swap(Money& other) noexcept {
     std::swap(data_, other.data_);
     std::swap(size_, other.size_);
+    std::swap(capacity_, other.capacity_);
 }
 
 std::size_t Money::size() const {
@@ -147,6 +150,8 @@ Money& Money::operator=(Money&& other) & {
         capacity_ = other.capacity_;
         size_ = other.size_;
         other.data_ = nullptr;
+        other.capacity_ = 0;
+        other.size_ = 0;
     }
     return *this;
 }
