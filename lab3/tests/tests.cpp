@@ -1,11 +1,10 @@
 #include <gtest/gtest.h>
 
 #include "figure.h"
+#include "figure_array.h"
 #include "rectangle.h"
 #include "square.h"
 #include "trapezoid.h"
-#include "figure_array.h"
-
 
 TEST(lab3, square) {
     EXPECT_EQ(Square({0, 0}, {2, 2}), Square({0, 2}, {2, 0}));
@@ -40,7 +39,7 @@ TEST(lab3, rectangle) {
 
     rec1 = Rectangle(Segment({0, 0}, {4, 0}), {1, -std::sqrt(3)});
     EXPECT_TRUE(eq(static_cast<double>(rec1), 6.92820323));
-    EXPECT_EQ(rec1.center(), Point(2,0));
+    EXPECT_EQ(rec1.center(), Point(2, 0));
 }
 
 TEST(lab3, trapezoid) {
@@ -59,8 +58,16 @@ TEST(lab3, array) {
     auto fig2 = Square({0, 2}, {2, 0});
     auto fig3 = Rectangle(Segment{{0, 1}, {1, 0}}, Point{0, 0});
     auto fig4 = Trapezoid{Segment{{0, 0}, {2, 0}}, Segment{{0.5, 1}, {1.5, 1}}};
-    FigureArray arr {&fig1, &fig2, &fig3, &fig4};
-    EXPECT_TRUE(eq(arr.sumOfSquares(), 4+4+1+1.5));
+
+    FigureArray arr{&fig1, &fig2, &fig3, &fig4};
+    EXPECT_TRUE(eq(arr.sumOfSquares(), 4 + 4 + 1 + 1.5));
+    arr.pushBack(&fig1);
+    arr.pushBack(&fig2);
+    arr.pushBack(&fig3);
+    arr.pushBack(&fig4);
+    EXPECT_TRUE(eq(arr.sumOfSquares(), (4 + 4 + 1 + 1.5) * 2));
+    arr.erase(1);
+    EXPECT_TRUE(eq(arr.sumOfSquares(), (4 + 4 + 1 + 1.5) * 2 - 4));
 }
 
 int main(int argc, char **argv) {

@@ -55,7 +55,7 @@ class MainRoutine {
         for (int i = 0; i < data.size(); i++) {
             std::cout << (i + 1) << ":\n";
             std::cout << "  area : " << static_cast<double>(*data[i]) << "\n"
-                      << "  geometric_center : " << data[i]->center() << "\n";
+                      << "  enter : " << data[i]->center() << "\n";
         }
     }
 
