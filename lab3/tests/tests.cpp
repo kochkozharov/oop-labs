@@ -4,6 +4,8 @@
 #include "rectangle.h"
 #include "square.h"
 #include "trapezoid.h"
+#include "figure_array.h"
+
 
 TEST(lab3, square) {
     EXPECT_EQ(Square({0, 0}, {2, 2}), Square({0, 2}, {2, 0}));
@@ -50,6 +52,15 @@ TEST(lab3, trapezoid) {
     auto tr3 = Trapezoid{Segment{{0, 0}, {2, 0}}, Segment{{0.5, 1}, {1.5, 1}}};
     EXPECT_EQ(static_cast<double>(tr3), 1.5);
     EXPECT_EQ(tr3.center(), (Point{1, 0.5}));
+}
+
+TEST(lab3, array) {
+    auto fig1 = Square({0, 0}, {2, 2});
+    auto fig2 = Square({0, 2}, {2, 0});
+    auto fig3 = Rectangle(Segment{{0, 1}, {1, 0}}, Point{0, 0});
+    auto fig4 = Trapezoid{Segment{{0, 0}, {2, 0}}, Segment{{0.5, 1}, {1.5, 1}}};
+    FigureArray arr {&fig1, &fig2, &fig3, &fig4};
+    EXPECT_TRUE(eq(arr.sumOfSquares(), 4+4+1+1.5));
 }
 
 int main(int argc, char **argv) {

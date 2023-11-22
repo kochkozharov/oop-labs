@@ -3,7 +3,7 @@
 
 class Rectangle final : public Figure {
    public:
-    Rectangle() = delete;
+    Rectangle() = default;
     explicit Rectangle(Segment const& diag, Point const& a);
     explicit Rectangle(Point const& a,Segment const& diag);
     Point center() const noexcept override;

@@ -3,7 +3,7 @@
 
 class Square final : public Figure {
    public:
-    explicit Square() = delete;
+    explicit Square() = default;
     explicit Square(Point const& p1, Point const& p2);
     Point center() const noexcept override;
     explicit operator double() const noexcept override;

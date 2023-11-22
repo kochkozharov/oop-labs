@@ -4,7 +4,7 @@
 
 class Trapezoid final : public Figure {
    public:
-    Trapezoid() = delete;
+    Trapezoid() = default;
     explicit Trapezoid(Segment const& a, Segment const& b);
     Point center() const noexcept override;
     explicit operator double() const noexcept override;

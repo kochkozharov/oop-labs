@@ -8,6 +8,7 @@ add_executable(lab3 main.cpp src/figure.cpp include/figure.h
                              src/rectangle.cpp include/rectangle.h
                              src/square.cpp include/square.h
                              src/trapezoid.cpp include/trapezoid.h
+                             src/figure_array.cpp include/figure_array.h
 )
 target_include_directories(lab3 PRIVATE include)
 set_target_properties(lab3 PROPERTIES OUTPUT_NAME "main")
@@ -16,6 +17,7 @@ add_executable(lab3_tests tests/tests.cpp src/figure.cpp include/figure.h
                              src/square.cpp include/square.h
                              src/trapezoid.cpp include/trapezoid.h
                              src/rectangle.cpp include/rectangle.h
+                             src/figure_array.cpp include/figure_array.h
 )
 
 target_include_directories(lab3_tests PRIVATE include)
