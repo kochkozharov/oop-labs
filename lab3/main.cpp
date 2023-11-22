@@ -1,12 +1,9 @@
-#include "figure.h"
-#include "figure_array.h"
-#include "point.h"
-
 #include <iostream>
-
-using namespace std;
-using namespace lab3;
+#include "figure.h"
+#include "square.h"
+#include "rectangle.h"
+#include "trapezoid.h"
 
 int main() {
-    return 0;
-}
+
+}  

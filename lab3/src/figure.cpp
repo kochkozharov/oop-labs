@@ -1,51 +1,88 @@
 #include "figure.h"
 
-#include <iostream>
+#include <limits>
 
-#include "utils.h"
+std::istream& operator>>(std::istream& is, Figure& fig) {
+    fig.input(is);
+    return is;
+}
+std::ostream& operator<<(std::ostream& os, Figure const& fig) {
+    fig.print(os);
+    return os;
+}
 
-namespace lab3 {
+bool operator==(Point const& first, Point const& second) {
+    return eq(first.x, second.x) && eq(first.y, second.y);
+}
+bool operator!=(Point const& first, Point const& second) {
+    return !(first == second);
+}
 
-Square::Square(const Point& a, const Point& b) {
-    if (!eq(std::abs(a.x - b.x), std::abs(a.y - b.y))) {
+Point::Point() : x(0), y(0){};
+
+Point::Point(double x, double y) : x(x), y(y){};
+
+std::istream& operator>>(std::istream& is, Point& p) {
+    is >> p.x >> p.y;
+    return is;
+}
+std::ostream& operator<<(std::ostream& os, Point const& p) {
+    os << '(' << p.x << ' ' << p.y << ')';
+    return os;
+}
+
+Segment::Segment(Point const& first, Point const& second) {
+    if (first == second) {
         throw std::invalid_argument("Bad points");
     }
-    if (orientedOpposite(a, b)) {
-        this->a = a;
-        this->b = b;
-    } else if (orientedOpposite(b, a)) {
-        this->a = b;
-        this->b = a;
-    } else if (orientedOpposite(a, b, false)) {
-        this->a.x = a.x;
-        this->a.y = b.y;
-        this->b.x = b.x;
-        this->b.y = a.y;
+    if (first < second) {
+        a = first;
+        b = second;
     } else {
-        this->a.x = b.x;
-        this->a.y = a.y;
-        this->b.x = a.x;
-        this->b.y = b.y;
-    }  // normalized
+        a = second;
+        b = first;
+    }
 }
 
-bool operator==(const Square& sq1, const Square& sq2) {
-    return sq1.a == sq2.a && sq1.b == sq2.b;
+double Point::distance(Point const& first, Point const& second) {
+    return std::sqrt((second.x - first.x) * (second.x - first.x) +
+                     (second.y - first.y) * (second.y - first.y));
 }
 
-std::ostream& operator<<(std::ostream& output, const Figure& figure) {
-    figure.print(output);
-    return output;
+double Point::distanceSquare(Point const& first, Point const& second) {
+    return (second.x - first.x) * (second.x - first.x) +
+           (second.y - first.y) * (second.y - first.y);
 }
 
-std::istream& operator>>(std::istream& input, Figure& figure) {
-    figure.input(input);
-    return input;
+double Segment::slope() const {
+    if (!eq(a.x - b.x, 0)) return (a.y - b.y) / (a.x - b.x);
+    return std::numeric_limits<double>::max();
 }
 
-Square::operator double() const {}
-Point Square::geometricCenter() const {}
-void Square::print(std::ostream& output) const {}
-void Square::input(std::istream& input) {}
-}  // namespace lab3
-   // namespace lab3
+double Segment::legnth() const { return Point::distance(a, b); }
+
+double Segment::legnthSquare() const { return Point::distanceSquare(a, b); }
+
+
+bool Segment::parallel(Segment const& first, Segment const& second) {
+    return eq(first.slope(), second.slope());
+}
+
+double Point::dotProduct(Point const& first, Point const& second) {
+    return first.x * second.x + first.y * second.y;
+}
+
+bool operator==(Segment const& first, Segment const& second) {
+    return first.a == second.a && first.b == second.b;
+}
+bool operator!=(Segment const& first, Segment const& second) {
+    return !(first == second);
+}
+
+bool operator<(Point const& first,
+               Point const& second) {  // checked unequality
+    if (eq(first.x, second.x)) {
+        return first.y < second.y;
+    }
+    return first.x < second.x;
+}
