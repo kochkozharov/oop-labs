@@ -1,70 +1,71 @@
 #include <cstddef>
-#include <initializer_list>
 #include <cstring>
+#include <initializer_list>
+#include <memory>
+#include <stdexcept>
 
-#include "figure.h"
-
-class FigureArray {
+template <class T>
+class Array {
    public:
-    FigureArray() noexcept;
-    FigureArray(std::size_t size);
-    FigureArray(std::initializer_list<Figure*> list);
-    FigureArray(const FigureArray& other);
-    FigureArray(FigureArray&& other) noexcept;
+    Array() noexcept;
+    Array(std::size_t size);
+    Array(std::initializer_list<T> list);
     std::size_t capacity() const noexcept;
     void clear() noexcept;
     bool empty() const noexcept;
     void popBack();
-    void pushBack(Figure* const& fig);
-    void resize(std::size_t newSize, Figure*& value);
+    void pushBack(T const &fig);
+    void resize(std::size_t newSize, T &value);
     void reserve(std::size_t newCapacity);
-    FigureArray& operator=(const FigureArray& other) noexcept;
-    FigureArray& operator=(FigureArray&& other) noexcept;
-    Figure*& operator[](std::size_t ind);
-    Figure* const& operator[](std::size_t ind) const;
+    T &operator[](std::size_t ind);
+    T const &operator[](std::size_t ind) const;
     void erase(std::size_t ind);
     std::size_t size() const noexcept;
-    void swap(FigureArray& other) noexcept;
-    ~FigureArray() noexcept;
+    void swap(Array &other) noexcept;
     double sumOfSquares() const noexcept;
 
    private:
-    Figure** data_;
+    std::shared_ptr<T[]> data_;
     std::size_t capacity_, size_;
     std::size_t newCapacity() const;
-    static Figure** reallocate(Figure** oldData, std::size_t oldSize,
-                               std::size_t newSize);
+    std::shared_ptr<T[]> reallocate(std::shared_ptr<T[]> oldData,
+                                    size_t oldSize, size_t newSize);
 };
 
+template <class T>
+std::size_t Array<T>::capacity() const noexcept {
+    return capacity_;
+}
 
+template <class T>
+void Array<T>::clear() noexcept {
+    size_ = 0;
+}
 
+template <class T>
+bool Array<T>::empty() const noexcept {
+    return size_ == 0;
+}
 
-static size_t newCapacity(size_t capacity);
-
-std::size_t FigureArray::capacity() const noexcept { return capacity_; }
-
-void FigureArray::clear() noexcept { size_ = 0; }
-
-FigureArray::~FigureArray() noexcept { delete[] data_; }
-
-bool FigureArray::empty() const noexcept { return size_ == 0; }
-
-void FigureArray::pushBack(Figure *const &value) {
+template <class T>
+void Array<T>::pushBack(T const &value) {
     if (capacity_ == size_) {
         const size_t capacity = newCapacity();
-        Figure **data = reallocate(data_, capacity_, capacity);
+        std::shared_ptr<T[]> data = reallocate(data_, capacity_, capacity);
         data_ = data;
         capacity_ = capacity;
     }
     data_[size_++] = value;
 }
 
-void FigureArray::popBack() {
+template <class T>
+void Array<T>::popBack() {
     if (size_ == 0) throw std::length_error("Out of range");
     --size_;
 }
 
-void FigureArray::resize(const size_t newSize, Figure *&value) {
+template <class T>
+void Array<T>::resize(const size_t newSize, T &value) {
     if (newSize <= size_) {
         size_ = newSize;
         return;
@@ -73,91 +74,69 @@ void FigureArray::resize(const size_t newSize, Figure *&value) {
         while (size_ < newSize) data_[size_++] = value;
         return;
     }
-    Figure **data = reallocate(data_, size_, newSize);
+    T *data = reallocate(data_, size_, newSize);
     data_ = data;
     capacity_ = newSize;
     while (size_ < newSize) data_[size_++] = value;
 }
 
-Figure *&FigureArray::operator[](size_t ind) {
+template <class T>
+T &Array<T>::operator[](size_t ind) {
     if (size_ <= ind) {
         throw std::out_of_range("Out of range");
     }
     return data_[ind];
 }
 
-Figure *const &FigureArray::operator[](std::size_t ind) const {
+template <class T>
+T const &Array<T>::operator[](std::size_t ind) const {
     if (size_ <= ind) {
         throw std::out_of_range("Out of range");
     }
     return data_[ind];
 }
 
-std::size_t FigureArray::size() const noexcept { return size_; }
+template <class T>
+std::size_t Array<T>::size() const noexcept {
+    return size_;
+}
 
-std::size_t FigureArray::newCapacity() const {
+template <class T>
+std::size_t Array<T>::newCapacity() const {
     if (capacity_ == 0) return 1;
     return capacity_ <= SIZE_MAX / 2 ? capacity_ * 2 : SIZE_MAX;
 }
 
-Figure **FigureArray::reallocate(Figure **oldData, size_t oldSize,
-                                 size_t newSize) {
-    Figure **data = new Figure *[newSize];
+template <class T>
+std::shared_ptr<T[]> Array<T>::reallocate(
+    std::shared_ptr<T[]> oldData, size_t oldSize, size_t newSize) {
+    auto temp = std::move(oldData);
+    auto data = std::make_shared<T[]>(newSize);
     for (size_t i = 0; i < std::min(oldSize, newSize); i++) {
-        data[i] = oldData[i];
-    }
-    if (oldData != nullptr) {
-        delete[] oldData;
+        data[i] = temp[i];
     }
     return data;
 }
 
-FigureArray::FigureArray() noexcept : data_(nullptr), capacity_(0), size_(0) {}
-FigureArray::FigureArray(std::size_t size)
-    : size_(size), capacity_(size), data_(reallocate(nullptr, 0, size)) {}
-FigureArray::FigureArray(std::initializer_list<Figure *> list)
+template <class T>
+Array<T>::Array() noexcept : data_(nullptr), capacity_(0), size_(0) {}
+template <class T>
+Array<T>::Array(std::size_t size)
+    : size_(size), capacity_(size), data_(std::make_shared<T[]>(size)) {}
+template <class T>
+Array<T>::Array(std::initializer_list<T> list)
     : size_(list.size()),
       capacity_(list.size()),
-      data_(reallocate(nullptr, 0, list.size())) {
+      data_(std::make_shared<T[]>(list.size())) {
     std::size_t c = 0;
     for (auto f : list) {
         data_[c] = f;
         ++c;
     }
 }
-FigureArray::FigureArray(const FigureArray &other)
-    : data_(reallocate(nullptr, 0, other.size_)),
-      size_(other.size_),
-      capacity_(other.capacity_) {
-    std::memcpy(data_, other.data_, size_ * sizeof(Figure *));
-}
-FigureArray::FigureArray(FigureArray &&other) noexcept
-    : data_(other.data_), size_(other.size_), capacity_(other.capacity_) {
-    delete[] other.data_;
-    other.data_ = nullptr;
-    other.size_ = 0;
-    other.capacity_ = 0;
-}
 
-FigureArray &FigureArray::operator=(const FigureArray &other) noexcept {
-    FigureArray m{other};
-    swap(m);
-    return *this;
-}
-FigureArray &FigureArray::operator=(FigureArray &&other) noexcept {
-    if (this != &other) {
-        delete[] data_;
-        data_ = other.data_;
-        capacity_ = other.capacity_;
-        size_ = other.size_;
-        other.data_ = nullptr;
-        other.capacity_ = 0;
-        other.size_ = 0;
-    }
-    return *this;
-}
-
-void FigureArray::erase(size_t ind) {
+template <class T>
+void Array<T>::erase(size_t ind) {
     if (ind >= size_) {
         throw std::out_of_range("Out of range");
     }
@@ -169,18 +148,21 @@ void FigureArray::erase(size_t ind) {
     }
 }
 
-void FigureArray::swap(FigureArray &other) noexcept {
+template <class T>
+void Array<T>::swap(Array &other) noexcept {
     std::swap(size_, other.size_);
     std::swap(capacity_, other.capacity_);
     std::swap(data_, other.data_);
 }
 
-void FigureArray::reserve(std::size_t newCapacity) {
+template <class T>
+void Array<T>::reserve(std::size_t newCapacity) {
     data_ = reallocate(data_, capacity_, newCapacity);
     capacity_ = newCapacity;
 }
 
-double FigureArray::sumOfSquares() const noexcept {
+template <class T>
+double Array<T>::sumOfSquares() const noexcept {
     double sum = 0;
     for (std::size_t i = 0; i < size_; ++i) {
         sum += static_cast<double>(*data_[i]);

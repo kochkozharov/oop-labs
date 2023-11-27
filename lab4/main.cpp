@@ -1,4 +1,5 @@
 #include <iostream>
+#include <memory>
 
 #include "figure.h"
 #include "figure_array.h"
@@ -6,6 +7,7 @@
 #include "square.h"
 #include "trapezoid.h"
 
+template <Number T>
 class MainRoutine {
    private:
     void eraseFigure() {
@@ -26,17 +28,17 @@ class MainRoutine {
         std::cin >> type;
         try {
             if (type == "square") {
-                Square *sq = new Square;
+                auto sq = std::make_shared<Square<T>>();
                 std::cin >> *sq;
-                data.pushBack((Figure *)sq);
+                data.pushBack(sq);
             } else if (type == "rectangle") {
-                Rectangle *tr = new Rectangle;
-                std::cin >> *tr;
-                data.pushBack((Figure *)tr);
+                auto rec = std::make_shared<Rectangle<T>>();
+                std::cin >> *rec;
+                data.pushBack(rec);
             } else if (type == "trapezoid") {
-                Trapezoid *oct = new Trapezoid;
-                std::cin >> *oct;
-                data.pushBack((Figure *)oct);
+                auto tr = std::make_shared<Trapezoid<T>>();
+                std::cin >> *tr;
+                data.pushBack(tr);
             } else {
                 std::cout << "Unknown figure name.\n";
                 return;
@@ -59,7 +61,7 @@ class MainRoutine {
         }
     }
 
-    FigureArray data;
+    Array<std::shared_ptr<Figure<T>>> data;
 
    public:
     void start() {
@@ -85,6 +87,6 @@ class MainRoutine {
 };
 
 int main() {
-    MainRoutine r;
+    MainRoutine<double> r;
     r.start();
 }
