@@ -25,11 +25,10 @@ class Array {
     double sumOfSquares() const noexcept;
 
    private:
-    std::shared_ptr<T[]> data_;
+    std::unique_ptr<T[]> data_;
     std::size_t capacity_, size_;
     std::size_t newCapacity() const;
-    std::shared_ptr<T[]> reallocate(std::shared_ptr<T[]> oldData,
-                                    size_t oldSize, size_t newSize);
+    void reallocate(size_t newSize);
 };
 
 template <class T>
@@ -51,8 +50,7 @@ template <class T>
 void Array<T>::pushBack(T const &value) {
     if (capacity_ == size_) {
         const size_t capacity = newCapacity();
-        std::shared_ptr<T[]> data = reallocate(data_, capacity_, capacity);
-        data_ = data;
+        reallocate(capacity);
         capacity_ = capacity;
     }
     data_[size_++] = value;
@@ -74,8 +72,7 @@ void Array<T>::resize(const size_t newSize, T &value) {
         while (size_ < newSize) data_[size_++] = value;
         return;
     }
-    T *data = reallocate(data_, size_, newSize);
-    data_ = data;
+    reallocate(newSize);
     capacity_ = newSize;
     while (size_ < newSize) data_[size_++] = value;
 }
@@ -108,15 +105,12 @@ std::size_t Array<T>::newCapacity() const {
 }
 
 template <class T>
-std::shared_ptr<T[]> Array<T>::reallocate(
-    std::shared_ptr<T[]> oldData, size_t oldSize, size_t newSize) {
-    auto temp = std::move(oldData);
-    auto data = std::make_shared<T[]>(newSize);
-    for (size_t i = 0; i < std::min(oldSize, newSize); i++) {
-        data[i] = temp[i];
-    }
-    return data;
+void Array<T>::reallocate(size_t newSize) {
+    auto newData = std::make_unique<T[]>(newSize);
+    std::copy(data_.get(), data_.get()+capacity_, newData.get());
+    data_ = std::move(newData);
 }
+
 
 template <class T>
 Array<T>::Array() noexcept : data_(nullptr), capacity_(0), size_(0) {}
@@ -127,7 +121,7 @@ template <class T>
 Array<T>::Array(std::initializer_list<T> list)
     : size_(list.size()),
       capacity_(list.size()),
-      data_(std::make_shared<T[]>(list.size())) {
+      data_(std::make_unique<T[]>(list.size())) {
     std::size_t c = 0;
     for (auto f : list) {
         data_[c] = f;
@@ -157,7 +151,7 @@ void Array<T>::swap(Array &other) noexcept {
 
 template <class T>
 void Array<T>::reserve(std::size_t newCapacity) {
-    data_ = reallocate(data_, capacity_, newCapacity);
+    reallocate(newCapacity);
     capacity_ = newCapacity;
 }
 
