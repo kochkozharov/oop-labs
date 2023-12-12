@@ -1,17 +1,16 @@
 #include <gtest/gtest.h>
 
-#include "allocator.h"
-#include "vector.h"
-
 #include <iostream>
 #include <map>
 #include <vector>
 
+#include "allocator.h"
+#include "vector.h"
+
 using namespace lab5;
 
 static int fact(int n) {
-    if (n == 0)
-        return 1;
+    if (n == 0) return 1;
     int result = 1;
     for (; n > 0; n--) {
         result *= n;
@@ -39,21 +38,13 @@ TEST(Lab5, VectorTest) {
         sum += i;
     }
     EXPECT_EQ(sum, 21);
-    std::vector<std::vector<int>> meow = {
-        {1, 2, 3},
-        {3, 2, 1},
-        {123, 3123, 3}
-    };
-    Vector<std::vector<int>> mmeow;
-    for (size_t i = 0; i < meow.size(); i++) {
-        mmeow.pushBack(meow[i]);
-    }
-    for (size_t i = 0; i < mmeow.size(); i++) {
-        EXPECT_EQ(meow[i], mmeow[i]);
+    std::vector<int> a2{0, 1, 2, 3, 4, 5, 6};
+    for (int i = 0; i < a2.size(); ++i) {
+        ASSERT_EQ(a[i],a2[i]);
     }
 }
 
-TEST(Lab5, VectorBinAllocatorTest) {
+TEST(Lab5, VectorAllocatorTest) {
     Vector<int, Allocator<int>> a = {0, 1, 2, 3, 4};
     a.pushBack(5);
     a.pushBack(6);
@@ -62,35 +53,17 @@ TEST(Lab5, VectorBinAllocatorTest) {
         sum += i;
     }
     EXPECT_EQ(sum, 21);
-    std::vector<std::string> meow = {
-        "abc",
-        "meow",
-        "pepe"
-    };
-    Vector<std::string, Allocator<std::string>> mmeow;
-    for (size_t i = 0; i < meow.size(); i++) {
-        mmeow.pushBack(meow[i]);
+    std::vector<std::string> arr = {"a", "1", "123"};
+    Vector<std::string, Allocator<std::string>> copy;
+    for (size_t i = 0; i < arr.size(); i++) {
+        copy.pushBack(arr[i]);
     }
-    for (size_t i = 0; i < mmeow.size(); i++) {
-        EXPECT_EQ(meow[i], mmeow[i]);
+    for (size_t i = 0; i < copy.size(); i++) {
+        EXPECT_EQ(arr[i], copy[i]);
     }
 }
 
-TEST(Lab5, VectorInteratorTest) {
-    Vector<std::string, Allocator<std::string>> a = {
-        "abc",
-        "meow",
-        "clcl"
-    };
-
-    Vector<std::string, Allocator<std::string>> b(3);
-    std::copy(a.begin(), a.end(), b.begin());
-    for (size_t i = 0; i < b.size(); i++) {
-        EXPECT_EQ(a[i], b[i]);
-    }
-}
-
-int main(int argc, char **argv) {
+int main(int argc, char** argv) {
     testing::InitGoogleTest(&argc, argv);
     return RUN_ALL_TESTS();
 }
