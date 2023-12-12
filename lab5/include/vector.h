@@ -1,8 +1,8 @@
 #pragma once
 
 #include <cstddef>
-#include <memory>
 #include <iostream>
+#include <memory>
 
 namespace lab5 {
 
@@ -14,7 +14,6 @@ class Vector {
        private:
         Vector<T, Allocator>& vector;
         std::size_t ind;
-        friend class Vector<T, Allocator>;
 
        public:
         using difference_type = std::ptrdiff_t;
@@ -56,7 +55,6 @@ class Vector {
        private:
         Vector<T, Allocator>& vector;
         std::size_t ind;
-        friend class Vector<T, Allocator>;
 
        public:
         using difference_type = std::ptrdiff_t;
@@ -202,8 +200,6 @@ class Vector {
         }
         return stream;
     }
-
-    // Iterators
 
     Iterator begin() { return Iterator(*this, 0); }
 

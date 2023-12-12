@@ -1,10 +1,6 @@
-#include <chrono>
 #include <deque>
 #include <iostream>
-#include <list>
-#include <map>
 #include <memory>
-#include <utility>
 #include <vector>
 
 template <class T>
@@ -48,7 +44,9 @@ class Allocator {
 
     void deallocate(T *pointer, size_t n) {
         for (size_t i = 0; i < n; ++i) {
-            typename std::vector<T>::iterator iter = _used_blocks.begin() + std::distance(_used_blocks.data(), pointer);
+            typename std::vector<T>::iterator iter =
+                _used_blocks.begin() +
+                std::distance(_used_blocks.data(), pointer);
             _free_blocks[_free_count++] = iter;
         }
     }
@@ -69,4 +67,3 @@ template <typename T, typename U, size_t BLOCK_COUNT>
 constexpr bool operator!=(const Allocator<T> &lhs, const Allocator<U> &rhs) {
     return false;
 }
-
