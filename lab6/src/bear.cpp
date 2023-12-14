@@ -3,7 +3,7 @@
 #include "elf_.h"
 #include "rogue.h"
 
-Bear::Bear(int x, int y) : NPC(NpcType::BearType, x, y) {}
+Bear::Bear(int x, int y, const std::string &name) : NPC(NpcType::BearType, x, y, name) {}
 Bear::Bear(std::istream &is) : NPC(NpcType::BearType, is) {}
 
 void Bear::print(std::ostream &os) { os << *this; }

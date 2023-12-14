@@ -2,7 +2,7 @@
 #include "npc.h"
 
 struct Bear : public NPC {
-    Bear(int x, int y);
+    Bear(int x, int y,const std::string &name);
     Bear(std::istream &is);
 
 

@@ -6,7 +6,7 @@
 #include "npc.h"
 #include "rogue.h"
 
-std::string gen_random(const std::size_t len) {
+std::string get_random_string(const std::size_t len) {
     static const char alphanum[] =
         "0123456789"
         "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
@@ -17,7 +17,7 @@ std::string gen_random(const std::size_t len) {
     for (std::size_t i = 0; i < len; ++i) {
         tmp_s += alphanum[rand() % (sizeof(alphanum) - 1)];
     }
-    
+
     return tmp_s;
 }
 
@@ -92,17 +92,18 @@ std::shared_ptr<NPC> factory(std::istream &is) {
     return result;
 }
 
-std::shared_ptr<NPC> factory(NpcType type, int x, int y) {
+std::shared_ptr<NPC> factory(NpcType type, int x, int y,
+                             const std::string &name) {
     std::shared_ptr<NPC> result;
     switch (type) {
         case (NpcType::BearType):
-            result = std::make_shared<Bear>(x, y);
+            result = std::make_shared<Bear>(x, y, name);
             break;
         case (NpcType::ElfType):
-            result = std::make_shared<Elf>(x, y);
+            result = std::make_shared<Elf>(x, y, name);
             break;
         case (NpcType::RogueType):
-            result = std::make_shared<Rogue>(x, y);
+            result = std::make_shared<Rogue>(x, y, name);
             break;
         default:
             break;
@@ -157,14 +158,13 @@ set_t fight(const set_t &array, size_t distance) {
 
 int main() {
     set_t array;  // монстры
-
+    std::srand((unsigned)time(NULL) * getpid());     
     // Гененрируем начальное распределение монстров
     if (!std::filesystem::exists("npc.txt")) {
         std::cout << "Generating ..." << std::endl;
-        std::srand(time(nullptr));
         for (size_t i = 0; i < 10; ++i)
             array.insert(factory(NpcType(std::rand() % 3 + 1),
-                                 std::rand() % 501, std::rand() % 501));
+                                 std::rand() % 501, std::rand() % 501, get_random_string(6)));
         std::cout << "Saving ..." << std::endl;
 
         save(array, "npc.txt");
@@ -174,8 +174,8 @@ int main() {
 
     std::cout << "Fighting ..." << std::endl << array;
 
-    for (size_t distance = 20; (distance <= 100) && !array.empty();
-         distance += 10) {
+    for (size_t distance = 100; (distance <= 500) && !array.empty();
+         distance += 100) {
         std::cout << std::endl << "Fight on dist " << distance << std::endl;
         auto dead_list = fight(array, distance);
         for (auto &d : dead_list) array.erase(d);

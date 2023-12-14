@@ -2,7 +2,7 @@
 #include "npc.h"
 
 struct Elf : public NPC {
-    Elf(int x, int y);
+    Elf(int x, int y,const std::string &name);
     Elf(std::istream &is);
     void print(std::ostream &os) override;
     void save(std::ostream &os) override;

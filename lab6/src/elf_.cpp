@@ -3,7 +3,7 @@
 #include "bear.h"
 #include "rogue.h"
 
-Elf::Elf(int x, int y) : NPC(NpcType::ElfType, x, y) {}
+Elf::Elf(int x, int y,const std::string &name) : NPC(NpcType::ElfType, x, y, name) {}
 Elf::Elf(std::istream &is) : NPC(NpcType::ElfType, is) {}
 
 

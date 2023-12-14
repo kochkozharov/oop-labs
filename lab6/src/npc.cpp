@@ -1,7 +1,9 @@
 #include "npc.h"
 
-NPC::NPC(NpcType t, int _x, int _y) : type(t), x(_x), y(_y) {}
+NPC::NPC(NpcType t, int _x, int _y, const std::string &name)
+    : type(t), x(_x), y(_y), name(name) {}
 NPC::NPC(NpcType t, std::istream &is) : type(t) {
+    is >> name;
     is >> x;
     is >> y;
 }
@@ -27,11 +29,12 @@ bool NPC::is_elf() const { return false; }
 bool NPC::is_rogue() const { return false; }
 
 void NPC::save(std::ostream &os) {
+    os << name << std::endl;
     os << x << std::endl;
     os << y << std::endl;
 }
 
 std::ostream &operator<<(std::ostream &os, NPC &npc) {
-    os << "{ x:" << npc.x << ", y:" << npc.y << "} ";
+    os << npc.name << " { x:" << npc.x << ", y:" << npc.y << "} ";
     return os;
 }

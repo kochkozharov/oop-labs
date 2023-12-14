@@ -2,7 +2,7 @@
 #include "npc.h"
 
 struct Rogue : public NPC {
-    Rogue(int x, int y);
+    Rogue(int x, int y,const std::string &name);
     Rogue(std::istream &is);
 
     void print(std::ostream &os) override;
