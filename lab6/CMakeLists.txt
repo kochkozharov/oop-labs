@@ -1,0 +1,21 @@
+cmake_minimum_required(VERSION 3.10)
+project(lab6)
+
+find_package(GTest REQUIRED)
+include_directories(${GTEST_INCLUDE_DIRS})
+
+add_executable(lab6 main.cpp include/npc.h src/npc.cpp include/rogue.h src/rogue.cpp 
+              include/bear.h src/bear.cpp include/elf.h src/elf.cpp)
+
+target_include_directories(lab6 PRIVATE include)
+set_target_properties(lab6 PROPERTIES OUTPUT_NAME "main")
+
+add_executable(lab6_tests tests/tests.cpp include/npc.h src/npc.cpp include/rogue.h src/rogue.cpp 
+              include/bear.h src/bear.cpp include/elf.h src/elf.cpp)
+
+target_include_directories(lab6_tests PRIVATE include)
+set_target_properties(lab6_tests PROPERTIES OUTPUT_NAME "tests")
+target_link_libraries(lab6_tests ${GTEST_LIBRARIES})
+
+enable_testing()
+add_test(lab6_tests lab6_tests)
