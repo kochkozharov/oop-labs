@@ -2,9 +2,24 @@
 #include <filesystem>
 
 #include "bear.h"
-#include "elf.h"
+#include "elf_.h"
 #include "npc.h"
 #include "rogue.h"
+
+std::string gen_random(const std::size_t len) {
+    static const char alphanum[] =
+        "0123456789"
+        "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
+        "abcdefghijklmnopqrstuvwxyz";
+    std::string tmp_s;
+    tmp_s.reserve(len);
+
+    for (std::size_t i = 0; i < len; ++i) {
+        tmp_s += alphanum[rand() % (sizeof(alphanum) - 1)];
+    }
+    
+    return tmp_s;
+}
 
 // Text Observer
 class TextObserver : public IFightObserver {

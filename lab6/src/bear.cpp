@@ -1,6 +1,6 @@
 #include "bear.h"
 
-#include "elf.h"
+#include "elf_.h"
 #include "rogue.h"
 
 Bear::Bear(int x, int y) : NPC(NpcType::BearType, x, y) {}

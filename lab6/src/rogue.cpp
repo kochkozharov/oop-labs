@@ -1,7 +1,7 @@
 #include "rogue.h"
 
 #include "bear.h"
-#include "elf.h"
+#include "elf_.h"
 
 Rogue::Rogue(int x, int y) : NPC(NpcType::RogueType, x, y) {}
 Rogue::Rogue(std::istream &is) : NPC(NpcType::RogueType, is) {}
