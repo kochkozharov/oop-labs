@@ -3,9 +3,9 @@
 #include "bear.h"
 #include "rogue.h"
 
-Elf::Elf(int x, int y,const std::string &name) : NPC(NpcType::ElfType, x, y, name) {}
+Elf::Elf(int x, int y, const std::string &name)
+    : NPC(NpcType::ElfType, x, y, name) {}
 Elf::Elf(std::istream &is) : NPC(NpcType::ElfType, is) {}
-
 
 void Elf::print(std::ostream &os) { os << *this; }
 
@@ -13,7 +13,6 @@ void Elf::save(std::ostream &os) {
     os << static_cast<int>(NpcType::ElfType) << std::endl;
     NPC::save(os);
 }
-bool Elf::is_elf() const { return true; }
 
 bool Elf::fight(std::shared_ptr<Bear> other) {
     fight_notify(other, false);

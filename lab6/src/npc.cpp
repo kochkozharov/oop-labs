@@ -24,9 +24,6 @@ bool NPC::is_close(const std::shared_ptr<NPC> &other, size_t distance) const {
         return false;
 }
 
-bool NPC::is_bear() const { return false; }
-bool NPC::is_elf() const { return false; }
-bool NPC::is_rogue() const { return false; }
 
 void NPC::save(std::ostream &os) {
     os << name << std::endl;

@@ -158,13 +158,14 @@ set_t fight(const set_t &array, size_t distance) {
 
 int main() {
     set_t array;  // монстры
-    std::srand((unsigned)time(NULL) * getpid());     
+    std::srand((unsigned)time(NULL) * getpid());
     // Гененрируем начальное распределение монстров
     if (!std::filesystem::exists("npc.txt")) {
         std::cout << "Generating ..." << std::endl;
         for (size_t i = 0; i < 10; ++i)
             array.insert(factory(NpcType(std::rand() % 3 + 1),
-                                 std::rand() % 501, std::rand() % 501, get_random_string(6)));
+                                 std::rand() % 501, std::rand() % 501,
+                                 get_random_string(6)));
         std::cout << "Saving ..." << std::endl;
 
         save(array, "npc.txt");
@@ -185,7 +186,7 @@ int main() {
                   << "killed: " << dead_list.size() << std::endl
                   << "----------------------" << std::endl;
     }
-
+    std::cout << std::endl;
     std::cout << "Survivors:\n" << array;
 
     return 0;

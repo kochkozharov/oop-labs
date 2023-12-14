@@ -9,8 +9,6 @@ Rogue::Rogue(std::istream &is) : NPC(NpcType::RogueType, is) {}
 
 void Rogue::print(std::ostream &os) { os << *this; }
 
-bool Rogue::is_rogue() const { return true; }
-
 bool Rogue::fight(std::shared_ptr<Bear> other) {
     fight_notify(other, false);
     return false;

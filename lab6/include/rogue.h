@@ -7,7 +7,6 @@ struct Rogue : public NPC {
 
     void print(std::ostream &os) override;
 
-    bool is_rogue() const override;
 
     bool fight(std::shared_ptr<Bear> other) override;
     bool fight(std::shared_ptr<Elf> other) override;

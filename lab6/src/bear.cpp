@@ -13,8 +13,6 @@ void Bear::save(std::ostream &os) {
     NPC::save(os);
 }
 
-bool Bear::is_bear() const { return true; }
-
 bool Bear::fight(std::shared_ptr<Bear> other) {
     fight_notify(other, false);
     return false;
