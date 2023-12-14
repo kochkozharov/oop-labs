@@ -50,7 +50,7 @@ struct NPC : public std::enable_shared_from_this<NPC>
     virtual bool fight(std::shared_ptr<Bear> other) = 0;
     virtual bool fight(std::shared_ptr<Elf> other) = 0;
     virtual bool fight(std::shared_ptr<Rogue> other) = 0;
-    virtual void print() = 0;
+    virtual void print(std::ostream &os) = 0;
 
     virtual void save(std::ostream &os);
 

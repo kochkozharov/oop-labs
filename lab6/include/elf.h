@@ -4,7 +4,7 @@
 struct Elf : public NPC {
     Elf(int x, int y);
     Elf(std::istream &is);
-    void print() override;
+    void print(std::ostream &os) override;
     void save(std::ostream &os) override;
     bool is_elf() const override;
     bool fight(std::shared_ptr<Bear> other) override;

@@ -5,7 +5,7 @@ struct Rogue : public NPC {
     Rogue(int x, int y);
     Rogue(std::istream &is);
 
-    void print() override;
+    void print(std::ostream &os) override;
 
     bool is_rogue() const override;
 

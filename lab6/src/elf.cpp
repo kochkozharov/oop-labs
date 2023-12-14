@@ -6,7 +6,8 @@
 Elf::Elf(int x, int y) : NPC(NpcType::ElfType, x, y) {}
 Elf::Elf(std::istream &is) : NPC(NpcType::ElfType, is) {}
 
-void Elf::print() { std::cout << *this; }
+
+void Elf::print(std::ostream &os) { os << *this; }
 
 void Elf::save(std::ostream &os) {
     os << static_cast<int>(NpcType::ElfType) << std::endl;
@@ -15,8 +16,8 @@ void Elf::save(std::ostream &os) {
 bool Elf::is_elf() const { return true; }
 
 bool Elf::fight(std::shared_ptr<Bear> other) {
-    fight_notify(other, true);
-    return true;
+    fight_notify(other, false);
+    return false;
 }
 
 bool Elf::fight(std::shared_ptr<Elf> other) {

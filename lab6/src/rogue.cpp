@@ -6,7 +6,8 @@
 Rogue::Rogue(int x, int y) : NPC(NpcType::RogueType, x, y) {}
 Rogue::Rogue(std::istream &is) : NPC(NpcType::RogueType, is) {}
 
-void Rogue::print() { std::cout << *this; }
+
+void Rogue::print(std::ostream &os) { std::cout << *this; }
 
 bool Rogue::is_rogue() const { return true; }
 

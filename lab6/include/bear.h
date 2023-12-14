@@ -5,7 +5,9 @@ struct Bear : public NPC {
     Bear(int x, int y);
     Bear(std::istream &is);
 
-    void print() override;
+
+    void print(std::ostream &os) override;
+
     void save(std::ostream &os) override;
     bool is_bear() const override;
 

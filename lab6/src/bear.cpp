@@ -6,7 +6,7 @@
 Bear::Bear(int x, int y) : NPC(NpcType::BearType, x, y) {}
 Bear::Bear(std::istream &is) : NPC(NpcType::BearType, is) {}
 
-void Bear::print() { std::cout << *this; }
+void Bear::print(std::ostream &os) { os << *this; }
 
 void Bear::save(std::ostream &os) {
     os << static_cast<int>(NpcType::BearType) << std::endl;

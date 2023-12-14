@@ -1,3 +1,6 @@
+#include <ctime>
+#include <filesystem>
+
 #include "bear.h"
 #include "elf.h"
 #include "npc.h"
@@ -18,9 +21,31 @@ class TextObserver : public IFightObserver {
     void on_fight(const std::shared_ptr<NPC> attacker,
                   const std::shared_ptr<NPC> defender, bool win) override {
         if (win) {
-            std::cout << std::endl << "Murder --------" << std::endl;
-            attacker->print();
-            defender->print();
+            std::cout << std::endl << "Murder ---------------" << std::endl;
+            attacker->print(std::cout);
+            defender->print(std::cout);
+        }
+    }
+};
+
+class FileObserver : public IFightObserver {
+   private:
+    FileObserver(const std::string &filename) : file(filename){};
+    std::ofstream file;
+
+   public:
+    static std::shared_ptr<IFightObserver> get() {
+        static FileObserver instance("log.txt");
+        return std::shared_ptr<IFightObserver>(&instance,
+                                               [](IFightObserver *) {});
+    }
+
+    void on_fight(const std::shared_ptr<NPC> attacker,
+                  const std::shared_ptr<NPC> defender, bool win) override {
+        if (win) {
+            file << std::endl << "Murder ---------------" << std::endl;
+            attacker->print(file);
+            defender->print(file);
         }
     }
 };
@@ -44,7 +69,10 @@ std::shared_ptr<NPC> factory(std::istream &is) {
     } else
         std::cerr << "unexpected NPC type:" << type << std::endl;
 
-    if (result) result->subscribe(TextObserver::get());
+    if (result) {
+        result->subscribe(TextObserver::get());
+        result->subscribe(FileObserver::get());
+    };
 
     return result;
 }
@@ -93,7 +121,7 @@ set_t load(const std::string &filename) {
 
 // print to screen
 std::ostream &operator<<(std::ostream &os, const set_t &array) {
-    for (auto &n : array) n->print();
+    for (auto &n : array) n->print(std::cout);
     return os;
 }
 
@@ -116,14 +144,16 @@ int main() {
     set_t array;  // монстры
 
     // Гененрируем начальное распределение монстров
-    std::cout << "Generating ..." << std::endl;
-    for (size_t i = 0; i < 10; ++i)
-        array.insert(factory(NpcType(std::rand() % 3 + 1), std::rand() % 100,
-                             std::rand() % 100));
-    std::cout << "Saving ..." << std::endl;
+    if (!std::filesystem::exists("npc.txt")) {
+        std::cout << "Generating ..." << std::endl;
+        std::srand(time(nullptr));
+        for (size_t i = 0; i < 10; ++i)
+            array.insert(factory(NpcType(std::rand() % 3 + 1),
+                                 std::rand() % 501, std::rand() % 501));
+        std::cout << "Saving ..." << std::endl;
 
-    save(array, "npc.txt");
-
+        save(array, "npc.txt");
+    }
     std::cout << "Loading ..." << std::endl;
     array = load("npc.txt");
 
@@ -131,16 +161,17 @@ int main() {
 
     for (size_t distance = 20; (distance <= 100) && !array.empty();
          distance += 10) {
+        std::cout << std::endl << "Fight on dist " << distance << std::endl;
         auto dead_list = fight(array, distance);
         for (auto &d : dead_list) array.erase(d);
-        std::cout << "Fight stats ----------" << std::endl
+        std::cout << std::endl
+                  << "Fight stats ----------" << std::endl
                   << "distance: " << distance << std::endl
                   << "killed: " << dead_list.size() << std::endl
-                  << std::endl
-                  << std::endl;
+                  << "----------------------" << std::endl;
     }
 
-    std::cout << "Survivors:" << array;
+    std::cout << "Survivors:\n" << array;
 
     return 0;
 }
