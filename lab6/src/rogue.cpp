@@ -2,6 +2,7 @@
 
 #include "bear.h"
 #include "elf_.h"
+#include "visitor.h"
 
 Rogue::Rogue(int x, int y, const std::string &name) : NPC(NpcType::RogueType, x, y, name) {}
 Rogue::Rogue(std::istream &is) : NPC(NpcType::RogueType, is) {}
@@ -24,8 +25,8 @@ bool Rogue::fight(std::shared_ptr<Elf> other) {
     return false;
 }
 
-bool Rogue::accept(std::shared_ptr<NPC> attacker) {
-    return attacker->fight(std::static_pointer_cast<Rogue>(shared_from_this()));
+bool Rogue::accept(std::shared_ptr<Visitor> v) {
+    return v->visit(std::static_pointer_cast<Rogue>(shared_from_this()));
 }
 
 void Rogue::save(std::ostream &os) {

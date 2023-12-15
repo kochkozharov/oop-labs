@@ -14,7 +14,7 @@ struct Bear : public NPC {
     bool fight(std::shared_ptr<Elf> other) override;
     bool fight(std::shared_ptr<Rogue> other) override;
 
-    bool accept(std::shared_ptr<NPC> attacker) override;
+    bool accept(std::shared_ptr<Visitor> v) override;
 
     friend std::ostream &operator<<(std::ostream &os, Bear &knight);
 };

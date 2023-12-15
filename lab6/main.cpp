@@ -6,6 +6,7 @@
 #include "npc.h"
 #include "rogue.h"
 #include "factory.h"
+#include "visitor.h"
 
 std::string get_random_string(const std::size_t len) {
     static const char alphanum[] =
@@ -59,7 +60,8 @@ set_t fight(const set_t &array, size_t distance) {
             if ((attacker != defender) &&
                 (attacker->is_close(defender, distance))) {
                 bool success{false};
-                success = defender->accept(attacker);
+                auto v = std::make_shared<FightVisitor> (attacker);
+                success = defender->accept(v);
                 if (success) dead_list.insert(defender);
             }
 

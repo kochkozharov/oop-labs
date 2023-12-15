@@ -2,6 +2,7 @@
 
 #include "bear.h"
 #include "rogue.h"
+#include "visitor.h"
 
 Elf::Elf(int x, int y, const std::string &name)
     : NPC(NpcType::ElfType, x, y, name) {}
@@ -29,9 +30,10 @@ bool Elf::fight(std::shared_ptr<Rogue> other) {
     return true;
 }
 
-bool Elf::accept(std::shared_ptr<NPC> attacker) {
-    return attacker->fight(std::static_pointer_cast<Elf>(shared_from_this()));
+bool Elf::accept(std::shared_ptr<Visitor> v) {
+    return v->visit(std::static_pointer_cast<Elf>(shared_from_this()));
 }
+
 
 std::ostream &operator<<(std::ostream &os, Elf &elf) {
     os << "elf: " << *static_cast<NPC *>(&elf) << std::endl;

@@ -11,7 +11,8 @@
 #include <string>
 
 #include "observer.h"
-// type for npcs
+#include "visitor.h"
+
 struct NPC;
 struct Bear;
 struct Elf;
@@ -34,7 +35,7 @@ struct NPC : public std::enable_shared_from_this<NPC> {
     void fight_notify(const std::shared_ptr<NPC> defender, bool win);
     virtual bool is_close(const std::shared_ptr<NPC> &other,
                           size_t distance) const;
-    virtual bool accept(const std::shared_ptr<NPC> attacker) = 0;
+    virtual bool accept(std::shared_ptr<Visitor> v) = 0;
 
     virtual bool fight(std::shared_ptr<Bear> other) = 0;
     virtual bool fight(std::shared_ptr<Elf> other) = 0;
