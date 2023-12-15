@@ -10,6 +10,7 @@
 #include <set>
 #include <string>
 
+#include "observer.h"
 // type for npcs
 struct NPC;
 struct Bear;
@@ -18,11 +19,6 @@ struct Rogue;
 using set_t = std::set<std::shared_ptr<NPC>>;
 
 enum class NpcType { Unknown = 0, BearType = 1, ElfType = 2, RogueType = 3 };
-
-struct IFightObserver {
-    virtual void on_fight(const std::shared_ptr<NPC> attacker,
-                          const std::shared_ptr<NPC> defender, bool win) = 0;
-};
 
 struct NPC : public std::enable_shared_from_this<NPC> {
     NpcType type;
@@ -48,4 +44,5 @@ struct NPC : public std::enable_shared_from_this<NPC> {
     virtual void save(std::ostream &os);
 
     friend std::ostream &operator<<(std::ostream &os, NPC &npc);
+    virtual ~NPC() = default;
 };

@@ -5,6 +5,7 @@
 #include "elf_.h"
 #include "npc.h"
 #include "rogue.h"
+#include "factory.h"
 
 std::string get_random_string(const std::size_t len) {
     static const char alphanum[] =
@@ -21,97 +22,6 @@ std::string get_random_string(const std::size_t len) {
     return tmp_s;
 }
 
-// Text Observer
-class TextObserver : public IFightObserver {
-   private:
-    TextObserver(){};
-
-   public:
-    static std::shared_ptr<IFightObserver> get() {
-        static TextObserver instance;
-        return std::shared_ptr<IFightObserver>(&instance,
-                                               [](IFightObserver *) {});
-    }
-
-    void on_fight(const std::shared_ptr<NPC> attacker,
-                  const std::shared_ptr<NPC> defender, bool win) override {
-        if (win) {
-            std::cout << std::endl << "Murder ---------------" << std::endl;
-            attacker->print(std::cout);
-            defender->print(std::cout);
-        }
-    }
-};
-
-class FileObserver : public IFightObserver {
-   private:
-    FileObserver(const std::string &filename) : file(filename){};
-    std::ofstream file;
-
-   public:
-    static std::shared_ptr<IFightObserver> get() {
-        static FileObserver instance("log.txt");
-        return std::shared_ptr<IFightObserver>(&instance,
-                                               [](IFightObserver *) {});
-    }
-
-    void on_fight(const std::shared_ptr<NPC> attacker,
-                  const std::shared_ptr<NPC> defender, bool win) override {
-        if (win) {
-            file << std::endl << "Murder ---------------" << std::endl;
-            attacker->print(file);
-            defender->print(file);
-        }
-    }
-};
-
-// Фабрики -----------------------------------
-std::shared_ptr<NPC> factory(std::istream &is) {
-    std::shared_ptr<NPC> result;
-    int type{0};
-    if (is >> type) {
-        switch (type) {
-            case static_cast<int>(NpcType::BearType):
-                result = std::make_shared<Bear>(is);
-                break;
-            case static_cast<int>(NpcType::ElfType):
-                result = std::make_shared<Elf>(is);
-                break;
-            case static_cast<int>(NpcType::RogueType):
-                result = std::make_shared<Rogue>(is);
-                break;
-        }
-    } else
-        std::cerr << "unexpected NPC type:" << type << std::endl;
-
-    if (result) {
-        result->subscribe(TextObserver::get());
-        result->subscribe(FileObserver::get());
-    };
-
-    return result;
-}
-
-std::shared_ptr<NPC> factory(NpcType type, int x, int y,
-                             const std::string &name) {
-    std::shared_ptr<NPC> result;
-    switch (type) {
-        case (NpcType::BearType):
-            result = std::make_shared<Bear>(x, y, name);
-            break;
-        case (NpcType::ElfType):
-            result = std::make_shared<Elf>(x, y, name);
-            break;
-        case (NpcType::RogueType):
-            result = std::make_shared<Rogue>(x, y, name);
-            break;
-        default:
-            break;
-    }
-    if (result) result->subscribe(TextObserver::get());
-
-    return result;
-}
 
 // save array to file
 void save(const set_t &array, const std::string &filename) {
