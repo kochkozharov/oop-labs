@@ -47,26 +47,7 @@ set_t load(const std::string &filename) {
 }
 
 // print to screen
-std::ostream &operator<<(std::ostream &os, const set_t &array) {
-    for (auto &n : array) n->print(std::cout);
-    return os;
-}
 
-set_t fight(const set_t &array, size_t distance) {
-    set_t dead_list;
-
-    for (const auto &attacker : array)
-        for (const auto &defender : array)
-            if ((attacker != defender) &&
-                (attacker->is_close(defender, distance))) {
-                bool success{false};
-                auto v = std::make_shared<FightVisitor> (attacker);
-                success = defender->accept(v);
-                if (success) dead_list.insert(defender);
-            }
-
-    return dead_list;
-}
 
 int main() {
     set_t array;  // монстры

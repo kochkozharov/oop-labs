@@ -24,7 +24,6 @@ bool NPC::is_close(const std::shared_ptr<NPC> &other, size_t distance) const {
         return false;
 }
 
-
 void NPC::save(std::ostream &os) {
     os << name << std::endl;
     os << x << std::endl;
@@ -34,4 +33,25 @@ void NPC::save(std::ostream &os) {
 std::ostream &operator<<(std::ostream &os, NPC &npc) {
     os << npc.name << " { x:" << npc.x << ", y:" << npc.y << "} ";
     return os;
+}
+
+std::ostream &operator<<(std::ostream &os, const set_t &array) {
+    for (auto &n : array) n->print(std::cout);
+    return os;
+}
+
+set_t fight(const set_t &array, size_t distance) {
+    set_t dead_list;
+
+    for (const auto &attacker : array)
+        for (const auto &defender : array)
+            if ((attacker != defender) &&
+                (attacker->is_close(defender, distance))) {
+                bool success{false};
+                auto v = std::make_shared<FightVisitor>(attacker);
+                success = defender->accept(v);
+                if (success) dead_list.insert(defender);
+            }
+
+    return dead_list;
 }

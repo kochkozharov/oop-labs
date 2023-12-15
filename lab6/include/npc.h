@@ -47,3 +47,6 @@ struct NPC : public std::enable_shared_from_this<NPC> {
     friend std::ostream &operator<<(std::ostream &os, NPC &npc);
     virtual ~NPC() = default;
 };
+
+set_t fight(const set_t &array, size_t distance);
+std::ostream &operator<<(std::ostream &os, const set_t &array);
