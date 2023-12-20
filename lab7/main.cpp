@@ -12,8 +12,18 @@
 #include "rogue.h"
 
 using namespace std::chrono_literals;
-std::mutex print_mutex;
+struct print : std::stringstream {
+    ~print() {
+        static std::mutex mtx;
+        std::lock_guard<std::mutex> lck(mtx);
+        std::cout << this->str();
+        std::cout.flush();
+    }
+};
+
+std::atomic_bool quit = false;
 // Text Observer
+
 class TextObserver : public IFightObserver {
    private:
     TextObserver(){};
@@ -28,8 +38,7 @@ class TextObserver : public IFightObserver {
     void on_fight(const std::shared_ptr<NPC> attacker,
                   const std::shared_ptr<NPC> defender, bool win) override {
         if (win) {
-            std::lock_guard<std::mutex> lck(print_mutex);
-            std::cout << std::endl << "Murder --------" << std::endl;
+            print() << std::endl << "Murder --------" << std::endl;
             attacker->print();
             defender->print();
         }
@@ -108,28 +117,6 @@ std::ostream &operator<<(std::ostream &os, const set_t &array) {
     return os;
 }
 
-set_t fight(const set_t &array, size_t distance) {
-    set_t dead_list;
-
-    for (const auto &attacker : array)
-        for (const auto &defender : array)
-            if ((attacker != defender) &&
-                attacker->is_close(defender, distance) &&
-                defender->accept(attacker))
-                dead_list.insert(defender);
-
-    return dead_list;
-}
-
-struct print : std::stringstream {
-    ~print() {
-        static std::mutex mtx;
-        std::lock_guard<std::mutex> lck(print_mutex);
-        std::cout << this->str();
-        std::cout.flush();
-    }
-};
-
 struct FightEvent {
     std::shared_ptr<NPC> attacker;
     std::shared_ptr<NPC> defender;
@@ -155,25 +142,24 @@ class FightManager {
 
     void operator()() {
         while (true) {
+            if (quit) break;
+            std::optional<FightEvent> event;
+
             {
-                std::optional<FightEvent> event;
-
-                {
-                    std::lock_guard<std::shared_mutex> lock(mtx);
-                    if (!events.empty()) {
-                        event = events.back();
-                        events.pop();
-                    }
+                std::lock_guard<std::shared_mutex> lock(mtx);
+                if (!events.empty()) {
+                    event = events.back();
+                    events.pop();
                 }
-
-                if (event) {
-                    if (event->attacker->is_alive())      // no zombie fighting!
-                        if (event->defender->is_alive())  // already dead!
-                            if (event->defender->accept(event->attacker))
-                                event->defender->must_die();
-                } else
-                    std::this_thread::sleep_for(100ms);
             }
+
+            if (event) {
+                if (event->attacker->is_alive())
+                    if (event->defender->is_alive())
+                        if (event->defender->accept(event->attacker))
+                            event->defender->must_die();
+            } else
+                std::this_thread::sleep_for(100ms);
         }
     }
 };
@@ -191,12 +177,13 @@ int main() {
         array.insert(factory(NpcType(std::rand() % 3 + 1), std::rand() % MAX_X,
                              std::rand() % MAX_Y));
 
-    std::cout << "Starting list:" << std::endl << array;
+    std::cout << "Starting list:" << std::endl << array << std::endl;
 
     std::thread fight_thread(std::ref(FightManager::get()));
 
     std::thread move_thread([&array, MAX_X, MAX_Y, DISTANCE]() {
         while (true) {
+            if (quit) break;
             // move phase
             for (std::shared_ptr<NPC> npc : array) {
                 if (npc->is_alive()) {
@@ -211,14 +198,14 @@ int main() {
                     if (other != npc)
                         if (npc->is_alive())
                             if (other->is_alive())
-                                if (npc->is_close(other, DISTANCE))
+                                if (npc->is_close(other))
                                     FightManager::get().add_event({npc, other});
 
             std::this_thread::sleep_for(50ms);
         }
     });
 
-    while (true) {
+    for (int i = 0; i < 2; i++) {
         const int grid{20}, step_x{MAX_X / grid}, step_y{MAX_Y / grid};
         {
             std::array<char, grid * grid> fields{0};
@@ -245,23 +232,23 @@ int main() {
                 } else
                     fields[i + grid * j] = '.';
             }
+            print print{};
 
-            std::lock_guard<std::mutex> lck(print_mutex);
             for (int j = 0; j < grid; ++j) {
                 for (int i = 0; i < grid; ++i) {
                     char c = fields[i + j * grid];
                     if (c != 0)
-                        std::cout << "[" << c << "]";
+                        print << "[" << c << "]";
                     else
-                        std::cout << "[ ]";
+                        print << "[ ]";
                 }
-                std::cout << std::endl;
+                print << std::endl;
             }
-            std::cout << std::endl;
+            print << std::endl;
         }
         std::this_thread::sleep_for(1s);
     };
-
+    quit = true;
     move_thread.join();
     fight_thread.join();
 

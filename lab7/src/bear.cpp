@@ -29,18 +29,20 @@ bool Bear::fight(std::shared_ptr<Elf> other)
 
 bool Bear::fight(std::shared_ptr<Rogue> other)
 {
-    fight_notify(other, true);
-    return true;
+    fight_notify(other, false);
+    return false;
 }
 
 bool Bear::fight(std::shared_ptr<Bear> other)
 {
-    fight_notify(other, true);
-    return true;
+    fight_notify(other, false);
+    return false;
 }
 
 std::ostream &operator<<(std::ostream &os, Bear &rogue)
 {
-    os << "black rogue: " << *static_cast<NPC *>(&rogue) << std::endl;
+    os << "bear: " << *static_cast<NPC *>(&rogue) << std::endl;
     return os;
 }
+
+bool Bear::is_close(const std::shared_ptr<NPC> &other) { return NPC::is_close(other, 5); }

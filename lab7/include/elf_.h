@@ -15,6 +15,7 @@ struct Elf : public NPC
     
 
     void save(std::ostream &os) override;
-
+    bool is_close(const std::shared_ptr<NPC> &other) override;
+    
     friend std::ostream &operator<<(std::ostream &os, Elf &elf);
 };
