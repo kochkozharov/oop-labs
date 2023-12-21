@@ -10,84 +10,17 @@
 #include "elf_.h"
 #include "npc.h"
 #include "rogue.h"
+#include "factory.h"
 
 using namespace std::chrono_literals;
-struct print : std::stringstream {
-    ~print() {
-        static std::mutex mtx;
-        std::lock_guard<std::mutex> lck(mtx);
-        std::cout << this->str();
-        std::cout.flush();
-    }
-};
+
+
 
 std::atomic_bool quit = false;
 // Text Observer
 
-class TextObserver : public IFightObserver {
-   private:
-    TextObserver(){};
 
-   public:
-    static std::shared_ptr<IFightObserver> get() {
-        static TextObserver instance;
-        return std::shared_ptr<IFightObserver>(&instance,
-                                               [](IFightObserver *) {});
-    }
 
-    void on_fight(const std::shared_ptr<NPC> attacker,
-                  const std::shared_ptr<NPC> defender, bool win) override {
-        if (win) {
-            print() << std::endl << "Murder --------" << std::endl;
-            attacker->print();
-            defender->print();
-        }
-    }
-};
-
-// Фабрики -----------------------------------
-std::shared_ptr<NPC> factory(std::istream &is) {
-    std::shared_ptr<NPC> result;
-    int type{0};
-    if (is >> type) {
-        switch (type) {
-            case ElfType:
-                result = std::make_shared<Elf>(is);
-                break;
-            case RogueType:
-                result = std::make_shared<Rogue>(is);
-                break;
-            case BearType:
-                result = std::make_shared<Bear>(is);
-                break;
-        }
-    } else
-        std::cerr << "unexpected NPC type:" << type << std::endl;
-
-    if (result) result->subscribe(TextObserver::get());
-
-    return result;
-}
-
-std::shared_ptr<NPC> factory(NpcType type, int x, int y) {
-    std::shared_ptr<NPC> result;
-    switch (type) {
-        case ElfType:
-            result = std::make_shared<Elf>(x, y);
-            break;
-        case RogueType:
-            result = std::make_shared<Rogue>(x, y);
-            break;
-        case BearType:
-            result = std::make_shared<Bear>(x, y);
-            break;
-        default:
-            break;
-    }
-    if (result) result->subscribe(TextObserver::get());
-
-    return result;
-}
 
 // save array to file
 void save(const set_t &array, const std::string &filename) {
@@ -156,8 +89,16 @@ class FightManager {
             if (event) {
                 if (event->attacker->is_alive())
                     if (event->defender->is_alive())
-                        if (event->defender->accept(event->attacker))
-                            event->defender->must_die();
+                        if (event->defender->accept(event->attacker)) {
+                            int attacker_roll = std::rand() % 6 + 1;
+                            int defender_roll = std::rand() % 6 + 1;
+                            print()
+                                << "attack: " << attacker_roll
+                                << " defence: " << defender_roll << std::endl;
+                            if (attacker_roll > defender_roll) {
+                                event->defender->must_die();
+                            }
+                        }
             } else
                 std::this_thread::sleep_for(100ms);
         }
@@ -216,13 +157,13 @@ int main() {
 
                 if (npc->is_alive()) {
                     switch (npc->get_type()) {
-                        case ElfType:
+                        case NpcType::ElfType:
                             fields[i + grid * j] = 'E';
                             break;
-                        case RogueType:
+                        case NpcType::RogueType:
                             fields[i + grid * j] = 'R';
                             break;
-                        case BearType:
+                        case NpcType::BearType:
                             fields[i + grid * j] = 'B';
                             break;
 
@@ -251,6 +192,9 @@ int main() {
     quit = true;
     move_thread.join();
     fight_thread.join();
-
+    std::cout << "\nSurvivors:\n";
+    for (auto npc : array) {
+        npc->print();
+    }
     return 0;
 }

@@ -1,15 +1,16 @@
 #pragma once
 
+#include <math.h>
+
+#include <cstring>
+#include <fstream>
 #include <iostream>
 #include <memory>
-#include <cstring>
-#include <string>
 #include <random>
-#include <fstream>
 #include <set>
-#include <math.h>
 #include <shared_mutex>
-
+#include <string>
+#include "observer.h"
 // type for npcs
 struct NPC;
 struct Elf;
@@ -17,22 +18,10 @@ struct Rogue;
 struct Bear;
 using set_t = std::set<std::shared_ptr<NPC>>;
 
-enum NpcType
-{
-    Unknown = 0,
-    ElfType = 1,
-    RogueType = 2,
-    BearType = 3
-};
+enum class NpcType { Unknown = 0, ElfType = 1, RogueType = 2, BearType = 3 };
 
-struct IFightObserver
-{
-    virtual void on_fight(const std::shared_ptr<NPC> attacker, const std::shared_ptr<NPC> defender, bool win) = 0;
-};
-
-class NPC
-{
-private:
+class NPC {
+   private:
     std::mutex mtx;
 
     NpcType type;
@@ -42,10 +31,10 @@ private:
 
     std::vector<std::shared_ptr<IFightObserver>> observers;
 
-protected:
+   protected:
     bool is_close(const std::shared_ptr<NPC> &other, size_t distance);
 
-public:
+   public:
     NPC(NpcType t, int _x, int _y);
     NPC(NpcType t, std::istream &is);
 
@@ -64,7 +53,7 @@ public:
     NpcType get_type();
 
     virtual void save(std::ostream &os);
-
+    virtual int get_move_distance() = 0;
     friend std::ostream &operator<<(std::ostream &os, NPC &npc);
 
     void move(int shift_x, int shift_y, int max_x, int max_y);

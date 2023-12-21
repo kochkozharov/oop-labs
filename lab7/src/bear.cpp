@@ -2,8 +2,8 @@
 #include "elf_.h"
 #include "rogue.h"
 
-Bear::Bear(int x, int y) : NPC(BearType, x, y) {}
-Bear::Bear(std::istream &is) : NPC(BearType, is) {}
+Bear::Bear(int x, int y) : NPC(NpcType::BearType, x, y) {}
+Bear::Bear(std::istream &is) : NPC(NpcType::BearType, is) {}
 
 bool Bear::accept(std::shared_ptr<NPC> visitor){
     return visitor->fight(std::shared_ptr<Bear>(this,[](Bear*){}));
@@ -16,7 +16,7 @@ void Bear::print()
 
 void Bear::save(std::ostream &os)
 {
-    os << BearType << std::endl;
+    os << static_cast<int>(NpcType::BearType) << std::endl;
     NPC::save(os);
 }
 
@@ -46,3 +46,7 @@ std::ostream &operator<<(std::ostream &os, Bear &rogue)
 }
 
 bool Bear::is_close(const std::shared_ptr<NPC> &other) { return NPC::is_close(other, 5); }
+
+int Bear::get_move_distance() {
+    return 5;
+}

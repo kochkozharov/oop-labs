@@ -13,5 +13,7 @@ struct Bear : public NPC
     bool fight(std::shared_ptr<Bear> other) override;
     bool accept(std::shared_ptr<NPC> visitor) override;
     bool is_close(const std::shared_ptr<NPC> &other) override;
+    int get_move_distance() override;
+
     friend std::ostream &operator<<(std::ostream &os, Bear &rogue);
 };

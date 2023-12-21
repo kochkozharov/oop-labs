@@ -10,7 +10,8 @@ struct Rogue : public NPC
     bool fight(std::shared_ptr<Elf> other) override;
     bool fight(std::shared_ptr<Rogue> other) override;
     bool fight(std::shared_ptr<Bear> other) override;
-    friend std::ostream &operator<<(std::ostream &os, Rogue &rogue);
     bool is_close(const std::shared_ptr<NPC> &other) override;
+    int get_move_distance() override;
     bool accept(std::shared_ptr<NPC> visitor) override;
+    friend std::ostream &operator<<(std::ostream &os, Rogue &rogue);
 };
